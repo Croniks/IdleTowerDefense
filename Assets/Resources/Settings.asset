@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   _spawnCircleRadiusOffset: 0.05
-  _wavesCount: 3
+  _wavesCount: 1
   _wavesInterval: 2
-  _enemiesCountPerWave: 10
-  _enemiesInterval: 0.5
-  _destinationTime: 3
+  _enemiesCountPerWave: 3
+  _enemiesInterval: 1
+  _destinationTime: 6
   _destinationPercent: 0.925
   _destinationPosition: {x: 0, y: 0, z: 0}
   _overridePlayerPrefs: 0
