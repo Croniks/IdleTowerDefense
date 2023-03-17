@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using UnityEngine;
 
@@ -10,7 +9,13 @@ public class SettingsObject : ScriptableObject, ISettingsGetter, ISettingsSetter
     public event Action SettingsChanged;
 
     public float BaseMaxHP { get => _baseMaxHP; set => _baseMaxHP = value; }
-    [SerializeField, Space, Header("BaseSettings")] private float _baseMaxHP = 100f;
+    [SerializeField, Space, Header("BaseSettings")] private float _baseMaxHP = 100f; 
+
+    public BaseDamageSettings BaseDamageSettings { get => _baseDamageSettings; set => _baseDamageSettings = value; }
+    [SerializeField] private BaseDamageSettings _baseDamageSettings;
+
+    public float TargetHitTime { get => _targetHitTime; set => _targetHitTime = value; }
+    [SerializeField, Space, Header("ProjectileSettings")] private float _targetHitTime = 1f;
 
     public float SpawnCircleRadiusOffset { get => _spawnCircleRadiusOffset; set => _spawnCircleRadiusOffset = value; }
     [SerializeField, Space, Header("EnemiesSettings")] private float _spawnCircleRadiusOffset = 0.05f;
@@ -55,6 +60,27 @@ public class SettingsObject : ScriptableObject, ISettingsGetter, ISettingsSetter
             return;
         }
     }
+}
+
+[Serializable]
+public class BaseDamageSettings
+{
+    public IEnumerable<UpgradeValuePair> DamageAmountPerShot => _damageAmountPerShot;
+    [SerializeField] private List<UpgradeValuePair> _damageAmountPerShot;
+
+    public IEnumerable<UpgradeValuePair> ShotAmountPerSecond => _shotAmountPerSecond;
+    [SerializeField] private List<UpgradeValuePair> _shotAmountPerSecond;
+
+    public IEnumerable<UpgradeValuePair> ShootingRange => _shootingRange;
+    [SerializeField] private List<UpgradeValuePair> _shootingRange;
+
+    [Serializable]
+    public struct UpgradeValuePair
+    {
+        public int upgradeLvl;
+        public float value;
+        public int cost;
+    } 
 }
 
 public class PlayerPrefsSettingsNames

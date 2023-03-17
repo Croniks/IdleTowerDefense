@@ -4,9 +4,14 @@ public interface ISettingsGetter
 {
     public event Action SettingsChanged;
 
+    // Base settings
     public float BaseMaxHP { get; }
+    public BaseDamageSettings BaseDamageSettings { get; }
 
-
+    // Projectile settings
+    public float TargetHitTime { get; }
+    
+    // Enemies settings
     public float SpawnCircleRadiusOffset { get; }
     public float DestinationPercent { get; }
     public int WavesCount { get; }

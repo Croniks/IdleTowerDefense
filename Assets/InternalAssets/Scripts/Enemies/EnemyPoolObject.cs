@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class EnemyPoolObject : PoolObject, IShootingTarget
 {
+    public bool IsUnderAttack { get; set; }
+
     public LinkedListNode<EnemyPoolObject> EnemyNode { get; private set; }
     private Vector3 _spawnPosition;
     private Vector3 _basePosition;
@@ -47,7 +49,7 @@ public class EnemyPoolObject : PoolObject, IShootingTarget
             EventBus.RaiseEvent<IBaseDamageSubscriber>(h => h.HandleBaseDamage(0.01f));
         }
     }
-
+    
     public Vector3 GetTargetPosition()
     {
         return transform.position;

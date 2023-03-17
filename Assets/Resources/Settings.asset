@@ -12,12 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7ec13947284284c8d72ca577d0fd23, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
+  _baseMaxHP: 100
+  _baseDamageSettings:
+    _damageAmountPerShot:
+    - upgradeLvl: 0
+      value: 1
+      cost: 0
+    - upgradeLvl: 1
+      value: 2
+      cost: 20
+    - upgradeLvl: 2
+      value: 3
+      cost: 40
+    _shotAmountPerSecond:
+    - upgradeLvl: 0
+      value: 1
+      cost: 0
+    - upgradeLvl: 1
+      value: 2
+      cost: 25
+    - upgradeLvl: 2
+      value: 3
+      cost: 50
+    _shootingRange:
+    - upgradeLvl: 0
+      value: 5
+      cost: 0
+    - upgradeLvl: 1
+      value: 6
+      cost: 30
+    - upgradeLvl: 2
+      value: 7
+      cost: 60
+  _targetHitTime: 1
   _spawnCircleRadiusOffset: 0.05
-  _wavesCount: 10
+  _wavesCount: 1
   _wavesInterval: 2
-  _enemiesCountPerWave: 15
+  _enemiesCountPerWave: 1
   _enemiesInterval: 1
   _destinationTime: 6
   _destinationPercent: 0.925
-  _destinationPosition: {x: 0, y: 0, z: 0}
+  _enemyMaxHP: 3
   _overridePlayerPrefs: 0
