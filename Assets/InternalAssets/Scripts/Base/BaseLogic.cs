@@ -69,6 +69,11 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 
     #region UnityCalls
 
+    void Awake()
+    {
+        EventBus.Subscribe(this);
+    }
+
     private void Update()
     {
         _timeElapsedSinceLastShot += Time.deltaTime;
@@ -133,8 +138,6 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 
     private void OnEnable()
     {
-        EventBus.Subscribe(this);
-
         _shootingImprovementSystem.DamageAmountValueChanged += DamageAmountValueChangedHandler;
         _shootingImprovementSystem.ShotAmountPerSecondValueChanged += ShotAmountPerSecondChangedHandler;
         _shootingImprovementSystem.ShootingRangeValueChanged += ShootingRangeValueChangedHandler;
@@ -142,8 +145,6 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 
     private void OnDisable()
     {
-        EventBus.Unsubscribe(this);
-
         _shootingImprovementSystem.DamageAmountValueChanged -= DamageAmountValueChangedHandler;
         _shootingImprovementSystem.ShotAmountPerSecondValueChanged -= ShotAmountPerSecondChangedHandler;
         _shootingImprovementSystem.ShootingRangeValueChanged -= ShootingRangeValueChangedHandler;
@@ -170,12 +171,11 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
         if(_currentHP <= 0f)
         {
             _damageSpriteTransform.localScale = Vector3.one;
-            Debug.Log("База уничтожена !!!");
+            EventBus.RaiseEvent<IBaseDestroyedSubscriber>(h => h.HandleBaseDestroyed());
         }
         else
         {
             _damageSpriteTransform.localScale = (1f - (_currentHP / _maxHP)) * Vector3.one;
-            Debug.Log($"База получила урон !!! Текущее здоровье: {_currentHP} !!!");
         }
     }
 
