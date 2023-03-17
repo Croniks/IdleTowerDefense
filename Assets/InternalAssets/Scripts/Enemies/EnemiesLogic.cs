@@ -6,7 +6,12 @@ using UnityEngine;
 public class EnemiesLogic : MonoBehaviour
 {
     [SerializeField] private EnemiesPool _enemiesPool;
-    [SerializeField] private SettingsObject _settings;
+
+    public IEnumerable<IShootingTarget> ShootingTargets => _enemies;
+    private LinkedList<EnemyPoolObject> _enemies;
+    private List<LinkedListNode<EnemyPoolObject>> _nodesForRemove;
+
+    private ISettingsGetter _settings;
 
     private float _circleRadiusOffset;
     private int _wavesCount;
@@ -14,27 +19,25 @@ public class EnemiesLogic : MonoBehaviour
     private int _enemiesCountPerWave;
     private float _enemiesInterval;
     
+    private Vector3 _basePosition;
     private Vector3 _spawnCircleRadius;
-
-    public IEnumerable<IShootingTarget> ShootingTargets => _enemies;
-    private LinkedList<EnemyPoolObject> _enemies;
-    private List<LinkedListNode<EnemyPoolObject>> _nodesForRemove;
-
     private Coroutine _spawnCoroutine;
 
 
     #region SetupLogic
 
-    private void Awake()
+    public void Setup(ISettingsGetter settings, Vector3 basePosition)
     {
-        ApplySettings(_settings);
+        _settings = settings;
+        ApplySettings(settings);
+        _basePosition = basePosition;
         DefineSpawnCircleRadius();
 
         _enemies = new LinkedList<EnemyPoolObject>();
         _nodesForRemove = new List<LinkedListNode<EnemyPoolObject>>();
     }
     
-    private void ApplySettings(SettingsObject settings)
+    private void ApplySettings(ISettingsGetter settings)
     {
         _circleRadiusOffset = settings.SpawnCircleRadiusOffset;
         _wavesCount = settings.WavesCount;
@@ -99,11 +102,7 @@ public class EnemiesLogic : MonoBehaviour
                 enemy.transform.position = spawnPos;
                 LinkedListNode<EnemyPoolObject> enemyNode = _enemies.AddLast(enemy);
                 
-                Vector3 destinationPos = _settings.DestinationPosition;
-                float destinationTime = _settings.DestinationTime;
-                float destinationPercent = _settings.DestinationPercent;
-                
-                enemy.Setup(enemyNode, spawnPos, destinationPos, destinationTime, destinationPercent);
+                enemy.Setup(enemyNode, spawnPos, _basePosition, _settings);
             }
         }
     }

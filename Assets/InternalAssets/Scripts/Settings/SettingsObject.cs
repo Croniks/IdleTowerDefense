@@ -8,11 +8,13 @@ using UnityEngine;
 public class SettingsObject : ScriptableObject, ISettingsGetter, ISettingsSetter
 {
     public event Action SettingsChanged;
-    
+
+    public float BaseMaxHP { get => _baseMaxHP; set => _baseMaxHP = value; }
+    [SerializeField, Space, Header("BaseSettings")] private float _baseMaxHP = 100f;
+
     public float SpawnCircleRadiusOffset { get => _spawnCircleRadiusOffset; set => _spawnCircleRadiusOffset = value; }
     [SerializeField, Space, Header("EnemiesSettings")] private float _spawnCircleRadiusOffset = 0.05f;
-
-
+    
     public int WavesCount { get => _wavesCount; set => _wavesCount = value; }
     [SerializeField, Space] private int _wavesCount = 3;
 
@@ -30,8 +32,8 @@ public class SettingsObject : ScriptableObject, ISettingsGetter, ISettingsSetter
     public float DestinationPercent { get => _destinationPercent; set => _destinationPercent = value; }
     [SerializeField, Range(0f, 1f)] private float _destinationPercent = 0.9f;
 
-    public Vector3 DestinationPosition { get => _destinationPosition; set => _destinationPosition = value; }
-    [SerializeField] private Vector3 _destinationPosition = Vector3.zero;
+    public float EnemyMaxHP { get => _enemyMaxHP; set => _enemyMaxHP = value; }
+    [SerializeField] private float _enemyMaxHP = 3f;
 
     [SerializeField, Space] private bool _overridePlayerPrefs = false;
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using EventBusSystem;
 
 using UnityEngine;
@@ -6,19 +8,24 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 {
     [SerializeField] private Transform _damageSpriteTransform;
 
-    [SerializeField, Space] private float _maxHealth;
+    private ISettingsGetter _settings;
+    private IEnumerable<IShootingTarget> _shootingTargets;
 
-    private float _currentHealth;
-
+    private float _maxHP;
+    private float _currentHP;
+    
 
     #region SetupLogic
 
-    private void Awake()
+    public void Setup(ISettingsGetter settings, IEnumerable<IShootingTarget> shootingTargets)
     {
-        _currentHealth = _maxHealth;
+        _settings = settings;
+        _shootingTargets = shootingTargets;
+
+        _maxHP = _currentHP = _settings.BaseMaxHP;
         _damageSpriteTransform.localScale = Vector3.zero;
     }
-
+    
     #endregion
 
     #region UnityCalls
@@ -41,17 +48,17 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     
     public void HandleBaseDamage(float damage)
     {
-        _currentHealth -= damage;
+        _currentHP -= damage;
 
-        if(_currentHealth <= 0f)
+        if(_currentHP <= 0f)
         {
             _damageSpriteTransform.localScale = Vector3.one;
             Debug.Log("База уничтожена !!!");
         }
         else
         {
-            _damageSpriteTransform.localScale = (1f - (_currentHealth / _maxHealth)) * Vector3.one;
-            Debug.Log($"База получила урон !!! Текущее здоровье: {_currentHealth} !!!");
+            _damageSpriteTransform.localScale = (1f - (_currentHP / _maxHP)) * Vector3.one;
+            Debug.Log($"База получила урон !!! Текущее здоровье: {_currentHP} !!!");
         }
     }
 }

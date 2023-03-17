@@ -8,29 +8,30 @@ public class EnemyPoolObject : PoolObject, IShootingTarget
 {
     public LinkedListNode<EnemyPoolObject> EnemyNode { get; private set; }
     private Vector3 _spawnPosition;
-    private Vector3 _destinationPosition;
+    private Vector3 _basePosition;
+
     private float _destinationTime;
     private float _destinationPercent;
-    private float _maxHP = 10f;
+    private float _maxHP;
 
     private float _percentTraveled = 0f;
-    private float _currentHP = 10f;
+    private float _currentHP;
     
     
     public void Setup
     (
-        LinkedListNode<EnemyPoolObject> enemyNode, 
-        Vector3 spawnPosition, 
-        Vector3 destinationPosition, 
-        float destinationTime, 
-        float destinationPercent
+        LinkedListNode<EnemyPoolObject> enemyNode,
+        Vector3 spawnPosition,
+        Vector3 basePosition,
+        ISettingsGetter settings
     )
     {
         EnemyNode = enemyNode;
         _spawnPosition = spawnPosition;
-        _destinationPosition = destinationPosition;
-        _destinationTime = destinationTime;
-        _destinationPercent = destinationPercent;
+        _basePosition = basePosition;
+        _destinationTime = settings.DestinationTime;
+        _destinationPercent = settings.DestinationPercent;
+        _maxHP = _currentHP = settings.EnemyMaxHP;
     }
     
     public void MoveToBase()
@@ -39,7 +40,7 @@ public class EnemyPoolObject : PoolObject, IShootingTarget
         
         if(_percentTraveled < _destinationPercent)
         {
-            transform.position = Vector3.Lerp(_spawnPosition, _destinationPosition, _percentTraveled);
+            transform.position = Vector3.Lerp(_spawnPosition, _basePosition, _percentTraveled);
         }
         else
         {
