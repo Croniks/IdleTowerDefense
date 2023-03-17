@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -5,6 +6,10 @@ using UnityEngine;
 
 public class BaseShootingImprovementSystem : MonoBehaviour
 {
+    public event Action<float> DamageAmountValueChanged;
+    public event Action<float> ShotAmountPerSecondValueChanged;
+    public event Action<float> ShootingRangeValueChanged;
+
     private ISettingsGetter _settings;
 
     private Dictionary<int, ValueCostPair> _damageAmountGrades;

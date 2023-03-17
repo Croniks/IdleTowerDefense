@@ -4,25 +4,35 @@ using EventBusSystem;
 
 using UnityEngine;
 
+
 public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 {
+
     [SerializeField] private Transform _damageSpriteTransform;
-    [SerializeField] private Transform _attackRangeCircle;
 
     [SerializeField, Space] private ProjectilesPool _projectilesPool;
     [SerializeField] private BaseShootingImprovementSystem _shootingImprovementSystem;
-
+    [SerializeField] private AttackRangeCircle _attackRangeCircle;
+    
     private ISettingsGetter _settings;
     private IEnumerable<IShootingTarget> _shootingTargets;
 
     private float _maxHP;
     private float _currentHP;
+    private Vector3 _basePosition;
 
+    private float _shotTime;
+    private float _timeElapsedSinceLastShot = 0f;
+
+    private float _attackRange;
+    private float _attackDamage;
 
     #region SetupLogic
 
     public void Setup(ISettingsGetter settings, IEnumerable<IShootingTarget> shootingTargets)
     {
+        _basePosition = transform.position;
+
         _settings = settings;
         _shootingTargets = shootingTargets;
         
@@ -30,7 +40,10 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
         _damageSpriteTransform.localScale = Vector3.zero;
 
         _shootingImprovementSystem.Setup(_settings);
-        _attackRangeCircle.localScale = Vector3.one * _shootingImprovementSystem.ShootingRangeValue;
+
+        ShootingRangeValueChangedHandler(_shootingImprovementSystem.ShootingRangeValue);
+        ShotAmountPerSecondChangedHandler(_shootingImprovementSystem.ShotAmountPerSecondValue);
+        DamageAmountValueChangedHandler(_shootingImprovementSystem.DamageAmountValue);
     }
     
     #endregion
@@ -39,31 +52,68 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 
     private void Update()
     {
-        float closestDistance = float.MaxValue;
+        _timeElapsedSinceLastShot += Time.deltaTime;
 
-        foreach(IShootingTarget target in _shootingTargets)
+        if(_timeElapsedSinceLastShot >= _shotTime)
         {
-            
+            IShootingTarget currentTarget = null;
+            float squareAttackRange = Mathf.Pow(_attackRange, 2);
+
+            foreach (IShootingTarget target in _shootingTargets)
+            {
+                if (target.IsDestroyed == true)
+                {
+                    continue;
+                }
+
+                Vector3 targetPosition = target.GetTargetPosition();
+                float distanceToEnemy = (targetPosition - _basePosition).sqrMagnitude;
+                float deltaRange = squareAttackRange - distanceToEnemy;
+
+                if (deltaRange >= 0f)
+                {
+                    currentTarget = target;
+                }
+            }
+
+            if(currentTarget != null)
+            {
+                ProjectilePoolObject projectile = _projectilesPool.Spawn();
+                projectile.transform.position = _basePosition;
+                TurnProjectileTowardsEnemy(projectile.transform, currentTarget.GetTargetPosition());
+                projectile.Setup(_settings, currentTarget, _attackDamage);
+
+                _timeElapsedSinceLastShot = 0f;
+            }
         }
     }
 
     private void OnEnable()
     {
         EventBus.Subscribe(this);
+
+        _shootingImprovementSystem.DamageAmountValueChanged += DamageAmountValueChangedHandler;
+        _shootingImprovementSystem.ShotAmountPerSecondValueChanged += ShotAmountPerSecondChangedHandler;
+        _shootingImprovementSystem.ShootingRangeValueChanged += ShootingRangeValueChangedHandler;
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(this);
+
+        _shootingImprovementSystem.DamageAmountValueChanged -= DamageAmountValueChangedHandler;
+        _shootingImprovementSystem.ShotAmountPerSecondValueChanged -= ShotAmountPerSecondChangedHandler;
+        _shootingImprovementSystem.ShootingRangeValueChanged -= ShootingRangeValueChangedHandler;
     }
 
     #endregion
 
-    #region PrivateMehtods
+    #region PrivateMethods
 
-    private void ChooseShootingTarget(IEnumerable<IShootingTarget> shootingTargets)
+    private void TurnProjectileTowardsEnemy(Transform projectileTrans, Vector3 enemyPosition)
     {
-        
+        Vector3 direction = enemyPosition - projectileTrans.position;
+        projectileTrans.rotation = Quaternion.LookRotation(direction, projectileTrans.up);
     }
 
     #endregion
@@ -84,6 +134,22 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
             _damageSpriteTransform.localScale = (1f - (_currentHP / _maxHP)) * Vector3.one;
             Debug.Log($"База получила урон !!! Текущее здоровье: {_currentHP} !!!");
         }
+    }
+
+    private void DamageAmountValueChangedHandler(float value)
+    {
+        _attackDamage = value;
+    }
+
+    private void ShotAmountPerSecondChangedHandler(float value)
+    {
+        _shotTime = 1f / value;
+    }
+
+    private void ShootingRangeValueChangedHandler(float value)
+    {
+        _attackRangeCircle.SetRange(value);
+        _attackRange = _attackRangeCircle.GetDistanceToExtremePoint(_basePosition);
     }
 
     #endregion

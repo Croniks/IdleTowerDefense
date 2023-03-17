@@ -2,7 +2,7 @@ using UnityEngine;
 
 public interface IShootingTarget
 {
-    bool IsUnderAttack { get; set; }
+    bool IsDestroyed { get; set; }
     Vector3 GetTargetPosition();
     void TakeDamage(float damage);
 }

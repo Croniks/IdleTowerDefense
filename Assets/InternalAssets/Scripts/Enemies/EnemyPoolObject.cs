@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class EnemyPoolObject : PoolObject, IShootingTarget
 {
-    public bool IsUnderAttack { get; set; }
+    public bool IsDestroyed { get; set; }
 
     public LinkedListNode<EnemyPoolObject> EnemyNode { get; private set; }
     private Vector3 _spawnPosition;
