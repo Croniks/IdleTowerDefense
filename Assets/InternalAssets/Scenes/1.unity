@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 162145493}
   - component: {fileID: 162145494}
   m_Layer: 0
-  m_Name: Level
+  m_Name: Game
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -169,6 +169,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7218ec05b7a0240bd8de971bbfbfd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _baseLogic: {fileID: 0}
+  _enemiesLogic: {fileID: 0}
+  _settingsObject: {fileID: 0}
 --- !u!1 &265573469
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,7 +314,7 @@ GameObject:
   - component: {fileID: 381479880}
   - component: {fileID: 381479881}
   m_Layer: 0
-  m_Name: CircleRangeAttack
+  m_Name: AttackRangeCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

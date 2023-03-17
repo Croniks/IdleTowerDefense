@@ -11,11 +11,17 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     private float _currentHealth;
 
 
+    #region SetupLogic
+
     private void Awake()
     {
         _currentHealth = _maxHealth;
         _damageSpriteTransform.localScale = Vector3.zero;
     }
+
+    #endregion
+
+    #region UnityCalls
 
     private void OnEnable()
     {
@@ -27,6 +33,12 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
         EventBus.Unsubscribe(this);
     }
 
+    #endregion
+
+    #region PrivateMehtods
+
+    #endregion
+    
     public void HandleBaseDamage(float damage)
     {
         _currentHealth -= damage;

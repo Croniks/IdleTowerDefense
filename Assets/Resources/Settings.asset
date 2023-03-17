@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   _spawnCircleRadiusOffset: 0.05
-  _wavesCount: 1
+  _wavesCount: 10
   _wavesInterval: 2
-  _enemiesCountPerWave: 3
+  _enemiesCountPerWave: 15
   _enemiesInterval: 1
   _destinationTime: 6
   _destinationPercent: 0.925

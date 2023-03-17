@@ -33,12 +33,7 @@ public class EnemiesLogic : MonoBehaviour
         _enemies = new LinkedList<EnemyPoolObject>();
         _nodesForRemove = new List<LinkedListNode<EnemyPoolObject>>();
     }
-
-    private void Start()
-    {
-        _spawnCoroutine = StartCoroutine(SpawnEnemies());
-    }
-
+    
     private void ApplySettings(SettingsObject settings)
     {
         _circleRadiusOffset = settings.SpawnCircleRadiusOffset;
@@ -58,6 +53,13 @@ public class EnemiesLogic : MonoBehaviour
 
     #endregion
 
+    #region UnityCalls
+
+    private void Start()
+    {
+        _spawnCoroutine = StartCoroutine(SpawnEnemies());
+    }
+
     private void Update()
     {
         foreach (var enemy in _enemies)
@@ -76,7 +78,11 @@ public class EnemiesLogic : MonoBehaviour
         _nodesForRemove.ForEach(n => _enemies.Remove(n));
         _nodesForRemove.Clear();
     }
-    
+
+    #endregion
+
+    #region PrivateMethods
+
     private IEnumerator SpawnEnemies()
     {
         for(int i = 0; i < _wavesCount; i++)
@@ -108,4 +114,6 @@ public class EnemiesLogic : MonoBehaviour
         Vector3 spawnPosition = Quaternion.AngleAxis(randomAngle, Vector3.forward) * _spawnCircleRadius;
         return spawnPosition;
     }
+
+    #endregion
 }
