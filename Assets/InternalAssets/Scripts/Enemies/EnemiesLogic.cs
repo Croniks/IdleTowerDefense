@@ -23,6 +23,9 @@ public class EnemiesLogic : MonoBehaviour
     private Vector3 _spawnCircleRadius;
     private Coroutine _spawnCoroutine;
 
+    private float _timeElapsedSinceLastWave = 0f; 
+    private int _enemiesCountSpawnedSinceLastWave = 0; 
+    private float _timeElapsedSinceLastEnemySpawned = 0f; 
 
     #region SetupLogic
 
@@ -33,7 +36,21 @@ public class EnemiesLogic : MonoBehaviour
         _basePosition = basePosition;
         DefineSpawnCircleRadius();
 
+        if(_enemies != null)
+        {
+            foreach (var enemy in _enemies)
+            {
+                enemy.ReturnToPool();
+            }
+
+            _enemies.Clear();
+        }
         _enemies = new LinkedList<EnemyPoolObject>();
+        
+        if (_nodesForRemove != null)
+        {
+            _nodesForRemove.Clear();
+        }
         _nodesForRemove = new List<LinkedListNode<EnemyPoolObject>>();
     }
     
@@ -60,11 +77,13 @@ public class EnemiesLogic : MonoBehaviour
 
     private void Start()
     {
-        _spawnCoroutine = StartCoroutine(SpawnEnemies());
+        //_spawnCoroutine = StartCoroutine(SpawnEnemies());
     }
 
     private void Update()
     {
+        SpawnEnemiesEndlessly();
+
         foreach (var enemy in _enemies)
         {
             if(enemy.enabled == true)
@@ -78,8 +97,16 @@ public class EnemiesLogic : MonoBehaviour
             }
         }
 
-        _nodesForRemove.ForEach(n => _enemies.Remove(n));
-        _nodesForRemove.Clear();
+        if(_nodesForRemove.Count > 0)
+        {
+            _nodesForRemove.ForEach(n => _enemies.Remove(n));
+            _nodesForRemove.Clear();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if(_spawnCoroutine != null) StopCoroutine(_spawnCoroutine);
     }
 
     #endregion
@@ -103,6 +130,38 @@ public class EnemiesLogic : MonoBehaviour
                 LinkedListNode<EnemyPoolObject> enemyNode = _enemies.AddLast(enemy);
                 
                 enemy.Setup(enemyNode, spawnPos, _basePosition, _settings);
+            }
+        }
+    }
+
+    private void SpawnEnemiesEndlessly()
+    {
+        _timeElapsedSinceLastWave += Time.deltaTime;
+
+        if (_timeElapsedSinceLastWave >= _wavesInterval)
+        {
+            if(_enemiesCountSpawnedSinceLastWave < _enemiesCountPerWave)
+            {
+                _timeElapsedSinceLastEnemySpawned += Time.deltaTime;
+
+                if (_timeElapsedSinceLastEnemySpawned >= _enemiesInterval)
+                {
+                    Vector3 spawnPos = GetRandomSpawnPosition();
+
+                    EnemyPoolObject enemy = _enemiesPool.Spawn();
+                    enemy.transform.position = spawnPos;
+                    LinkedListNode<EnemyPoolObject> enemyNode = _enemies.AddLast(enemy);
+
+                    enemy.Setup(enemyNode, spawnPos, _basePosition, _settings);
+
+                    _enemiesCountSpawnedSinceLastWave++;
+                    _timeElapsedSinceLastEnemySpawned = 0f;
+                }
+            }
+            else
+            {
+                _enemiesCountSpawnedSinceLastWave = 0;
+                _timeElapsedSinceLastWave = 0f;
             }
         }
     }

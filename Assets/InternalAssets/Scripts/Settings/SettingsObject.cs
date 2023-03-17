@@ -14,8 +14,8 @@ public class SettingsObject : ScriptableObject, ISettingsGetter, ISettingsSetter
     public BaseDamageSettings BaseDamageSettings { get => _baseDamageSettings; set => _baseDamageSettings = value; }
     [SerializeField] private BaseDamageSettings _baseDamageSettings;
 
-    public float TargetHitTime { get => _targetHitTime; set => _targetHitTime = value; }
-    [SerializeField, Space, Header("ProjectileSettings")] private float _targetHitTime = 1f;
+    public float ProjectileMoveSpeed { get => _projectileMoveSpeed; set => _projectileMoveSpeed = value; }
+    [SerializeField, Space, Header("ProjectileSettings")] private float _projectileMoveSpeed = 1f;
 
     public float SpawnCircleRadiusOffset { get => _spawnCircleRadiusOffset; set => _spawnCircleRadiusOffset = value; }
     [SerializeField, Space, Header("EnemiesSettings")] private float _spawnCircleRadiusOffset = 0.05f;
@@ -39,6 +39,9 @@ public class SettingsObject : ScriptableObject, ISettingsGetter, ISettingsSetter
 
     public float EnemyMaxHP { get => _enemyMaxHP; set => _enemyMaxHP = value; }
     [SerializeField] private float _enemyMaxHP = 3f;
+
+    public int CostToKill { get => _costToKill; set => _costToKill = value; }
+    [SerializeField] private int _costToKill = 20;
 
     [SerializeField, Space] private bool _overridePlayerPrefs = false;
 

@@ -34,6 +34,10 @@ public class EnemyPoolObject : PoolObject, IShootingTarget
         _destinationTime = settings.DestinationTime;
         _destinationPercent = settings.DestinationPercent;
         _maxHP = _currentHP = settings.EnemyMaxHP;
+
+        _percentTraveled = 0f;
+        IsDestroyed = false;
+        enabled = true;
     }
     
     public void MoveToBase()
@@ -46,7 +50,7 @@ public class EnemyPoolObject : PoolObject, IShootingTarget
         }
         else
         {
-            EventBus.RaiseEvent<IBaseDamageSubscriber>(h => h.HandleBaseDamage(0.01f));
+            EventBus.RaiseEvent<IBaseDamageSubscriber>(h => h.HandleBaseDamage(0.05f));
         }
     }
     
@@ -61,14 +65,8 @@ public class EnemyPoolObject : PoolObject, IShootingTarget
 
         if (_currentHP <= 0f)
         {
-            Debug.Log("Враг уничтожен !!!");
             enabled = false;
-            
-            // Событие уничтожения врага
-        }
-        else
-        {
-            Debug.Log($"Враг получил урон !!!");
+            IsDestroyed = true;
         }
     }
 }

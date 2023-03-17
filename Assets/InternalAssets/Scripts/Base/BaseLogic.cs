@@ -16,6 +16,8 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     
     private ISettingsGetter _settings;
     private IEnumerable<IShootingTarget> _shootingTargets;
+    private LinkedList<ProjectilePoolObject> _projectiles;
+    private List<LinkedListNode<ProjectilePoolObject>> _projectilesNodesForRemove;
 
     private float _maxHP;
     private float _currentHP;
@@ -35,6 +37,23 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 
         _settings = settings;
         _shootingTargets = shootingTargets;
+
+        if (_projectiles != null)
+        {
+            foreach (var projectile in _projectiles)
+            {
+                projectile.ReturnToPool();
+            }
+
+            _projectiles.Clear();
+        }
+        _projectiles = new LinkedList<ProjectilePoolObject>();
+
+        if (_projectilesNodesForRemove != null)
+        {
+            _projectilesNodesForRemove.Clear();
+        }
+        _projectilesNodesForRemove = new List<LinkedListNode<ProjectilePoolObject>>();
         
         _maxHP = _currentHP = _settings.BaseMaxHP;
         _damageSpriteTransform.localScale = Vector3.zero;
@@ -56,6 +75,7 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
 
         if(_timeElapsedSinceLastShot >= _shotTime)
         {
+            float closestDistance = float.MaxValue;
             IShootingTarget currentTarget = null;
             float squareAttackRange = Mathf.Pow(_attackRange, 2);
 
@@ -70,8 +90,9 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
                 float distanceToEnemy = (targetPosition - _basePosition).sqrMagnitude;
                 float deltaRange = squareAttackRange - distanceToEnemy;
 
-                if (deltaRange >= 0f)
+                if (deltaRange >= 0f && distanceToEnemy < closestDistance)
                 {
+                    closestDistance = distanceToEnemy;
                     currentTarget = target;
                 }
             }
@@ -81,10 +102,32 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
                 ProjectilePoolObject projectile = _projectilesPool.Spawn();
                 projectile.transform.position = _basePosition;
                 TurnProjectileTowardsEnemy(projectile.transform, currentTarget.GetTargetPosition());
-                projectile.Setup(_settings, currentTarget, _attackDamage);
+
+                LinkedListNode<ProjectilePoolObject> node = _projectiles.AddLast(projectile);
+
+                projectile.Setup(node, _settings, currentTarget, _attackDamage);
 
                 _timeElapsedSinceLastShot = 0f;
             }
+        }
+
+        foreach (var projectile in _projectiles)
+        {
+            if (projectile.enabled == true)
+            {
+                projectile.MoveToEnemy();
+            }
+            else
+            {
+                _projectilesNodesForRemove.Add(projectile.ProjectileNode);
+                projectile.ReturnToPool();
+            }
+        }
+
+        if(_projectilesNodesForRemove.Count > 0)
+        {
+            _projectilesNodesForRemove.ForEach(n => _projectiles.Remove(n));
+            _projectilesNodesForRemove.Clear();
         }
     }
 

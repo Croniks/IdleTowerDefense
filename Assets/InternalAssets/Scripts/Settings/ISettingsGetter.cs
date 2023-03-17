@@ -9,7 +9,7 @@ public interface ISettingsGetter
     public BaseDamageSettings BaseDamageSettings { get; }
 
     // Projectile settings
-    public float TargetHitTime { get; }
+    public float ProjectileMoveSpeed { get; }
     
     // Enemies settings
     public float SpawnCircleRadiusOffset { get; }
@@ -20,4 +20,5 @@ public interface ISettingsGetter
     public float EnemiesInterval { get; }
     public float DestinationTime { get; }
     public float EnemyMaxHP { get; }
+    public int CostToKill { get; }
 }
