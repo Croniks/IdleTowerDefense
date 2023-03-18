@@ -26,13 +26,13 @@ MonoBehaviour:
       cost: 60
     _shotAmountPerSecond:
     - upgradeLvl: 0
-      value: 2
+      value: 1
       cost: 0
     - upgradeLvl: 1
-      value: 3
+      value: 2
       cost: 25
     - upgradeLvl: 2
-      value: 4
+      value: 3
       cost: 50
     _shootingRange:
     - upgradeLvl: 0

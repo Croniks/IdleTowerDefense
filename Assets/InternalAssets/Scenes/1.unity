@@ -1374,6 +1374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 371b553842ba12348b4d5c9fb508cccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _attackRangeCircle: {fileID: 381479882}
 --- !u!1 &1165390341
 GameObject:
   m_ObjectHideFlags: 0
@@ -1423,8 +1424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damageSpriteTransform: {fileID: 540248961}
   _projectilesPool: {fileID: 495613048}
-  _shootingImprovementSystem: {fileID: 923743232}
-  _attackRangeCircle: {fileID: 381479882}
+  _shootingGradesSystem: {fileID: 923743232}
 --- !u!1 &1174460141
 GameObject:
   m_ObjectHideFlags: 0
@@ -2159,6 +2159,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da27ad91868dbef4b866da944904054f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _panelRect: {fileID: 1447752567}
+  _damageUpgradeButton: {fileID: 603873898}
+  _damageUpgradeText: {fileID: 1534568875}
+  _speedUpgradeButton: {fileID: 1430040982}
+  _speedUpgradeText: {fileID: 1174460143}
+  _rangeUpgradeButton: {fileID: 1761309889}
+  _rangeUpgradeText: {fileID: 205804073}
 --- !u!1 &1461935883
 GameObject:
   m_ObjectHideFlags: 0

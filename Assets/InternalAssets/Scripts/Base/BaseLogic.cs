@@ -11,8 +11,7 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     [SerializeField] private Transform _damageSpriteTransform;
 
     [SerializeField, Space] private ProjectilesPool _projectilesPool;
-    [SerializeField] private BaseShootingGradesSystem _shootingImprovementSystem;
-    [SerializeField] private AttackRangeCircle _attackRangeCircle;
+    [SerializeField] private BaseShootingGradesSystem _shootingGradesSystem;
     
     private ISettingsGetter _settings;
     private IEnumerable<IShootingTarget> _shootingTargets;
@@ -22,13 +21,9 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     private float _maxHP;
     private float _currentHP;
     private Vector3 _basePosition;
-
-    private float _shotTime;
+    
     private float _timeElapsedSinceLastShot = 0f;
-
-    private float _attackRange;
-    private float _attackDamage;
-
+    
     #region SetupLogic
 
     public void Setup(ISettingsGetter settings, IEnumerable<IShootingTarget> shootingTargets)
@@ -58,11 +53,7 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
         _maxHP = _currentHP = _settings.BaseMaxHP;
         _damageSpriteTransform.localScale = Vector3.zero;
 
-        _shootingImprovementSystem.Setup(_settings);
-
-        ShootingRangeValueChangedHandler(_shootingImprovementSystem.ShootingRangeValue);
-        ShotAmountPerSecondChangedHandler(_shootingImprovementSystem.ShotAmountPerSecondValue);
-        DamageAmountValueChangedHandler(_shootingImprovementSystem.DamageAmountValue);
+        _shootingGradesSystem.Setup(_settings);
     }
     
     #endregion
@@ -94,11 +85,13 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     {
         _timeElapsedSinceLastShot += Time.deltaTime;
 
-        if (_timeElapsedSinceLastShot >= _shotTime)
+        float shotTime = 1 / _shootingGradesSystem.ShotAmountPerSecondValue;
+
+        if (_timeElapsedSinceLastShot >= shotTime)
         {
             float closestDistance = float.MaxValue;
             IShootingTarget currentTarget = null;
-            float squareAttackRange = Mathf.Pow(_attackRange, 2);
+            float squareAttackRange = Mathf.Pow(_shootingGradesSystem.ShootingRangeValue, 2);
 
             foreach (IShootingTarget target in _shootingTargets)
             {
@@ -124,7 +117,7 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
                 projectile.transform.position = _basePosition;
                 LinkedListNode<ProjectilePoolObject> node = _projectiles.AddLast(projectile);
 
-                projectile.Setup(node, _settings, currentTarget, _attackDamage);
+                projectile.Setup(node, _settings, currentTarget, _shootingGradesSystem.DamageAmountValue);
                 TurnProjectileTowardsEnemy(projectile.transform, currentTarget.GetTargetPosition());
 
                 _timeElapsedSinceLastShot = 0f;
@@ -178,22 +171,6 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
             _damageSpriteTransform.localScale = (1f - (_currentHP / _maxHP)) * Vector3.one;
         }
     }
-
-    private void DamageAmountValueChangedHandler(float value)
-    {
-        _attackDamage = value;
-    }
-
-    private void ShotAmountPerSecondChangedHandler(float value)
-    {
-        _shotTime = 1f / value;
-    }
-
-    private void ShootingRangeValueChangedHandler(float value)
-    {
-        _attackRangeCircle.SetRange(value);
-        _attackRange = _attackRangeCircle.GetDistanceToExtremePoint(_basePosition);
-    }
-
+    
     #endregion
 }

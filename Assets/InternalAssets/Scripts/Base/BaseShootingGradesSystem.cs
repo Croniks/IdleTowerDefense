@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 
+using EventBusSystem;
+
 using UnityEngine;
 
 
-public class BaseShootingGradesSystem : MonoBehaviour
+public class BaseShootingGradesSystem : MonoBehaviour, IUpgradeSubscriber
 {
+    [SerializeField] private AttackRangeCircle _attackRangeCircle;
+
     private ISettingsGetter _settings;
 
     private Dictionary<int, ValueCostPair> _damageAmountGrades;
@@ -16,8 +20,20 @@ public class BaseShootingGradesSystem : MonoBehaviour
     private int _currentShotAmountPerSecondGrade = 0;
 
     private Dictionary<int, ValueCostPair> _shootingRangeGrades;
-    public float ShootingRangeValue { get => _shootingRangeGrades[_currentShootingRangeGrade].value; }
+    public float ShootingRangeValue { get => _shootingRangeValue; }
     private int _currentShootingRangeGrade = 0;
+    private float _shootingRangeValue;
+
+
+    private void OnEnable()
+    {
+        EventBus.Subscribe(this);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Unsubscribe(this);
+    }
 
     public void Setup(ISettingsGetter settings)
     {
@@ -26,6 +42,8 @@ public class BaseShootingGradesSystem : MonoBehaviour
         _damageAmountGrades = SetupGradeCollection(_settings.BaseDamageSettings.DamageAmountPerShot);
         _shotAmountPerSecondGrades = SetupGradeCollection(_settings.BaseDamageSettings.ShotAmountPerSecond);
         _shootingRangeGrades = SetupGradeCollection(_settings.BaseDamageSettings.ShootingRange);
+
+        HandleRangeUpgrade(0);
     }
 
     private Dictionary<int, ValueCostPair> SetupGradeCollection(IEnumerable<BaseDamageSettings.UpgradeValuePair> from)
@@ -39,7 +57,33 @@ public class BaseShootingGradesSystem : MonoBehaviour
 
         return to;
     }
+
+    public void HandleDamageUpgrade(int gradeNumber)
+    {
+        if (gradeNumber < _damageAmountGrades.Count)
+        {
+            _currentDamageAmountGrade = gradeNumber;
+        }
+    }
+
+    public void HandleSpeedUpgrade(int gradeNumber)
+    {
+        if (gradeNumber < _shotAmountPerSecondGrades.Count)
+        {
+            _currentShotAmountPerSecondGrade = gradeNumber;
+        }
+    }
     
+    public void HandleRangeUpgrade(int gradeNumber)
+    {
+        if (gradeNumber < _shootingRangeGrades.Count)
+        {
+            _currentShootingRangeGrade = gradeNumber;
+            _attackRangeCircle.SetRange(_shootingRangeGrades[_currentShootingRangeGrade].value);
+            _shootingRangeValue = _attackRangeCircle.GetDistanceToExtremePoint(transform.position);
+        }
+    }
+
     private struct ValueCostPair
     {
         public float value;
