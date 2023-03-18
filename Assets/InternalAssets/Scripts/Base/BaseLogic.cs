@@ -11,7 +11,7 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     [SerializeField] private Transform _damageSpriteTransform;
 
     [SerializeField, Space] private ProjectilesPool _projectilesPool;
-    [SerializeField] private BaseShootingImprovementSystem _shootingImprovementSystem;
+    [SerializeField] private BaseShootingGradesSystem _shootingImprovementSystem;
     [SerializeField] private AttackRangeCircle _attackRangeCircle;
     
     private ISettingsGetter _settings;
@@ -122,11 +122,10 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
             {
                 ProjectilePoolObject projectile = _projectilesPool.Spawn();
                 projectile.transform.position = _basePosition;
-                TurnProjectileTowardsEnemy(projectile.transform, currentTarget.GetTargetPosition());
-
                 LinkedListNode<ProjectilePoolObject> node = _projectiles.AddLast(projectile);
 
                 projectile.Setup(node, _settings, currentTarget, _attackDamage);
+                TurnProjectileTowardsEnemy(projectile.transform, currentTarget.GetTargetPosition());
 
                 _timeElapsedSinceLastShot = 0f;
             }

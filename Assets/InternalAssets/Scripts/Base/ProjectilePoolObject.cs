@@ -11,6 +11,12 @@ public class ProjectilePoolObject : PoolObject
     private float _attackDamage;
 
     private Vector3 _normolizedMoveDirection;
+    private Quaternion _initialRotation;
+
+    private void Awake()
+    {
+        _initialRotation = transform.rotation;
+    }
 
     public void Setup
     (
@@ -20,6 +26,8 @@ public class ProjectilePoolObject : PoolObject
         float attactDamage
     )
     {
+        transform.rotation = _initialRotation;
+
         ProjectileNode = projectileNode;
         _target = target;
         _projectileMoveSpeed = settings.ProjectileMoveSpeed;

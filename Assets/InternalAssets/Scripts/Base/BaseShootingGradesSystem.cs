@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class BaseShootingImprovementSystem : MonoBehaviour
+public class BaseShootingGradesSystem : MonoBehaviour
 {
     private ISettingsGetter _settings;
 
