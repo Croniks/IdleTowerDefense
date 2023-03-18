@@ -68,17 +68,33 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
     #endregion
 
     #region UnityCalls
+    
+    private void Update()
+    {
+        SpawnProjectile();
 
-    void Awake()
+        MoveProjectiles();
+    }
+    
+    private void OnEnable()
     {
         EventBus.Subscribe(this);
     }
 
-    private void Update()
+    private void OnDisable()
+    {
+        EventBus.Unsubscribe(this);
+    }
+
+    #endregion
+
+    #region PrivateMethods
+
+    private void SpawnProjectile()
     {
         _timeElapsedSinceLastShot += Time.deltaTime;
 
-        if(_timeElapsedSinceLastShot >= _shotTime)
+        if (_timeElapsedSinceLastShot >= _shotTime)
         {
             float closestDistance = float.MaxValue;
             IShootingTarget currentTarget = null;
@@ -102,7 +118,7 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
                 }
             }
 
-            if(currentTarget != null)
+            if (currentTarget != null)
             {
                 ProjectilePoolObject projectile = _projectilesPool.Spawn();
                 projectile.transform.position = _basePosition;
@@ -115,7 +131,10 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
                 _timeElapsedSinceLastShot = 0f;
             }
         }
+    }
 
+    private void MoveProjectiles()
+    {
         foreach (var projectile in _projectiles)
         {
             if (projectile.enabled == true)
@@ -129,30 +148,12 @@ public class BaseLogic : MonoBehaviour, IBaseDamageSubscriber
             }
         }
 
-        if(_projectilesNodesForRemove.Count > 0)
+        if (_projectilesNodesForRemove.Count > 0)
         {
             _projectilesNodesForRemove.ForEach(n => _projectiles.Remove(n));
             _projectilesNodesForRemove.Clear();
         }
     }
-
-    private void OnEnable()
-    {
-        _shootingImprovementSystem.DamageAmountValueChanged += DamageAmountValueChangedHandler;
-        _shootingImprovementSystem.ShotAmountPerSecondValueChanged += ShotAmountPerSecondChangedHandler;
-        _shootingImprovementSystem.ShootingRangeValueChanged += ShootingRangeValueChangedHandler;
-    }
-
-    private void OnDisable()
-    {
-        _shootingImprovementSystem.DamageAmountValueChanged -= DamageAmountValueChangedHandler;
-        _shootingImprovementSystem.ShotAmountPerSecondValueChanged -= ShotAmountPerSecondChangedHandler;
-        _shootingImprovementSystem.ShootingRangeValueChanged -= ShootingRangeValueChangedHandler;
-    }
-
-    #endregion
-
-    #region PrivateMethods
 
     private void TurnProjectileTowardsEnemy(Transform projectileTrans, Vector3 enemyPosition)
     {

@@ -36,10 +36,12 @@ namespace EventBusSystem
             where TSubscriber : class, IGlobalSubscriber
         {
             SubscribersList<IGlobalSubscriber> subscribers = s_Subscribers[typeof(TSubscriber)];
-	
+	        
             subscribers.Executing = true;
-            foreach (IGlobalSubscriber subscriber in subscribers.List)
+            var list = subscribers.List;
+            for(int i = 0; i < list.Count; i++)
             {
+                IGlobalSubscriber subscriber = list[i];
                 try
                 {
                     action.Invoke(subscriber as TSubscriber);

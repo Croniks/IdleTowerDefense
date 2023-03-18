@@ -84,26 +84,9 @@ public class EnemiesLogic : MonoBehaviour
     {
         SpawnEnemiesEndlessly();
 
-        foreach (var enemy in _enemies)
-        {
-            if(enemy.enabled == true)
-            {
-                enemy.MoveToBase();
-            }
-            else
-            {
-                _nodesForRemove.Add(enemy.EnemyNode);
-                enemy.ReturnToPool();
-            }
-        }
-
-        if(_nodesForRemove.Count > 0)
-        {
-            _nodesForRemove.ForEach(n => _enemies.Remove(n));
-            _nodesForRemove.Clear();
-        }
+        ControlEnemies();
     }
-
+    
     private void OnDisable()
     {
         if(_spawnCoroutine != null) StopCoroutine(_spawnCoroutine);
@@ -163,6 +146,28 @@ public class EnemiesLogic : MonoBehaviour
                 _enemiesCountSpawnedSinceLastWave = 0;
                 _timeElapsedSinceLastWave = 0f;
             }
+        }
+    }
+
+    private void ControlEnemies()
+    {
+        foreach (var enemy in _enemies)
+        {
+            if (enemy.enabled == true)
+            {
+                enemy.MoveToBase();
+            }
+            else
+            {
+                _nodesForRemove.Add(enemy.EnemyNode);
+                enemy.ReturnToPool();
+            }
+        }
+
+        if (_nodesForRemove.Count > 0)
+        {
+            _nodesForRemove.ForEach(n => _enemies.Remove(n));
+            _nodesForRemove.Clear();
         }
     }
 
